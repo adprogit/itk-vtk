@@ -1,0 +1,16 @@
+[project]
+name = "itk-vtk"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "itk>=5.4.6",
+    "notebook>=7.5.6",
+    "vtk>=9.6.2",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.15",
+]

@@ -86,3 +86,5 @@ desktop.ini
 # but keep the data/ directory structure via .gitkeep
 data/*
 !data/.gitkeep
+!data/case6_gre1.nrrd
+!data/case6_gre2.nrrd

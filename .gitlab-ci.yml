@@ -4,8 +4,9 @@ stages:
 
 lint:ruff:
   stage: lint
-  image: ghcr.io/astral-sh/uv:python3.11-bookworm-slim
+  image: python:3.11-slim
   script:
+    - pip install uv
     - uv sync --dev
     - uv run ruff check .
     - uv run ruff format --check .

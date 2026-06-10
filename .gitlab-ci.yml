@@ -1,0 +1,26 @@
+# .gitlab-ci.yml
+stages:
+  - lint
+  - typecheck
+
+lint:ruff:
+  stage: lint
+  image: python:3.11-slim
+  script:
+    - pip install uv
+    - uv sync --dev
+    - uv run ruff check .
+    - uv run ruff format --check .
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+typecheck:mypy:
+  stage: typecheck
+  image: python:3.11-slim
+  script:
+    - pip install uv
+    - uv sync --dev
+    - uv run mypy src/ main.py
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

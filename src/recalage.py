@@ -109,7 +109,6 @@ def main() -> None:
     fixed_r, moving_r = recaler_rigide(fixed, moving)
     itk.imwrite(fixed_r, "recalee.png")
     print(moving_r.GetParameters())
-    return
 
 
 fixed, moving = read_volumes(path_1, path_2)

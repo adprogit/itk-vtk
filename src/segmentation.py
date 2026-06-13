@@ -18,20 +18,20 @@ def crop_image(image, start, size):
     Both start and size should be 3-element lists/tuples in ITK coordinate order (x, y, z).
     """
     dimension = image.GetImageDimension()
-    
+
     index_itk = itk.Index[dimension]()
     for i in range(dimension):
         index_itk[i] = int(start[i])
-        
+
     size_itk = itk.Size[dimension]()
     for i in range(dimension):
         size_itk[i] = int(size[i])
-        
+
     region = itk.ImageRegion[dimension]()
     region.SetIndex(index_itk)
     region.SetSize(size_itk)
-    
+
     crop_filter = itk.RegionOfInterestImageFilter.New(Input=image, RegionOfInterest=region)
     crop_filter.Update()
-    
+
     return crop_filter.GetOutput()

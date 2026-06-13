@@ -69,7 +69,13 @@ def recaler_rigide(
 PLANS = {"axial": 0, "coronal": 1, "sagittal": 2}
 
 
-def sauver_coupes(fixed, moving, recalee, prefixe="recalage", dossier="figures"):
+def sauver_coupes(
+    fixed: ITKImage,
+    moving: ITKImage,
+    recalee: ITKImage,
+    prefixe: str = "recalage",
+    dossier: str = "figures",
+) -> None:
     os.makedirs(dossier, exist_ok=True)
     f = itk.array_view_from_image(fixed)
     m = itk.array_view_from_image(moving)
@@ -98,12 +104,12 @@ def sauver_coupes(fixed, moving, recalee, prefixe="recalage", dossier="figures")
         print(f"écrit : {chemin}")
 
 
-def main() -> int:
+def main() -> None:
     fixed, moving = read_volumes(path_1, path_2)
     fixed_r, moving_r = recaler_rigide(fixed, moving)
     itk.imwrite(fixed_r, "recalee.png")
     print(moving_r.GetParameters())
-    return 0
+    return
 
 
 fixed, moving = read_volumes(path_1, path_2)

@@ -29,14 +29,14 @@ def itk_image_to_vtk_image(img: ITKImage) -> VTKImage:
 
     flat: np.ndarray = arr.flatten(order="C")
     new_arr: Any = vtk.vtkUnsignedCharArray()
-    new_arr.SetNumberOfTyples(len(flat))
+    new_arr.SetNumberOfTuples(len(flat))
     for index, value in enumerate(flat):
         new_arr.SetValue(index, int(value))
     new_img.GetPointData().SetScalars(new_arr)
     return new_img
 
 
-def make_surface_actor(vtk_img: VTKImage, rgb: Any, opacity: float) -> vtk.vtkActor:
+def make_surface_actor(vtk_img: VTKImage, rgb: tuple[float, float, float], opacity: float) -> vtk.vtkActor:
     mc: vtk.vtkMarchingCubes = vtk.vtkMarchingCubes()
     mc.SetInputData(vtk_img)
     mc.SetValue(0, 0.5)
@@ -68,14 +68,16 @@ def make_surface_actor(vtk_img: VTKImage, rgb: Any, opacity: float) -> vtk.vtkAc
 
 
 def main() -> None:
-    segmentation1: ITKImage = load_image("figures/segmentation_1.nrrd")
-    segmentation2: ITKImage = load_image("figures/segmentation_2.nrrd")
+    segmentation1: ITKImage = load_image("../data/case6_gre1.nrrd")
+    segmentation2: ITKImage = load_image("../data/case6_gre2.nrrd")
+    # segmentation1: ITKImage = load_image("figures/segmentation_1.nrrd")
+    # segmentation2: ITKImage = load_image("figures/segmentation_2.nrrd")
 
     vtk_seg1: VTKImage = itk_image_to_vtk_image(segmentation1)
     vtk_seg2: VTKImage = itk_image_to_vtk_image(segmentation2)
 
-    pos_seg1: np.ndarray = (itk.array_from_image(vtk_seg1) > 0).astype(np.uint8)
-    pos_seg2: np.ndarray = (itk.array_from_image(vtk_seg2) > 0).astype(np.uint8)
+    pos_seg1: np.ndarray = (itk.array_from_image(segmentation1) > 0).astype(np.uint8)
+    pos_seg2: np.ndarray = (itk.array_from_image(segmentation2) > 0).astype(np.uint8)
 
     spacing: Any = vtk_seg1.GetSpacing()
     volume_voxel: float = spacing[0] * spacing[1] * spacing[2]
@@ -110,13 +112,15 @@ def main() -> None:
     text_actor.GetPositionCoordinate().SetCoordinateSystemToNormalizedDisplay()
     text_actor.SetPosition(0.02, 0.02)
 
+    sphere: vtk.vtkSphereSource = vtk.vtkSphereSource()
+    sphere.Update()
+
     legend: vtk.vtkLegendBoxActor = vtk.vtkLegendBoxActor()
     legend.SetNumberOfEntries(2)
-    legend.GetEntrySymbol(0).DeepCopy(
-        vtk.vtkSphereSource().GetOutput() or actor1.GetMapper().GetInput()
-    )
+    legend.SetEntrySymbol(0, sphere.GetOutput())
     legend.SetEntryColor(0, 1.0, 0.2, 0.2)
     legend.SetEntryString(0, "T1 (baseline)")
+    legend.SetEntrySymbol(1, sphere.GetOutput())
     legend.SetEntryColor(1, 0.2, 0.4, 1.0)
     legend.SetEntryString(1, "T2 (follow-up)")
     legend.GetPositionCoordinate().SetCoordinateSystemToNormalizedDisplay()
@@ -126,8 +130,22 @@ def main() -> None:
     renderer: vtk.vtkRenderer = vtk.vtkRenderer()
     renderer.AddActor(actor1)
     renderer.AddActor(actor2)
-    renderer.AddActor2D(text_actor)
-    renderer.AddActor2D(legend)
+    renderer.AddViewProp(text_actor)
+    renderer.AddViewProp(legend)
+    renderer.SetBackground(0.1, 0.1, 0.15)
+    renderer.ResetCamera()
+
+    render_window: vtk.vtkRenderWindow = vtk.vtkRenderWindow()
+    render_window.AddRenderer(renderer)
+    render_window.SetWindowName("Tumor Evolution — T1 vs T2")
+    render_window.SetSize(1000, 800)
+
+    interactor: vtk.vtkRenderWindowInteractor = vtk.vtkRenderWindowInteractor()
+    interactor.SetRenderWindow(render_window)
+    interactor.SetInteractorStyle(vtk.vtkInteractorStyleTrackballCamera())
+
+    render_window.Render()
+    interactor.Start()
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 from src.segmentation import read_image, write_image, crop_image
 
-def main():
+def main() -> None:
     gre1_path = "data/case6_gre1.nrrd"
     gre2_path = "data/case6_gre2.nrrd"
 

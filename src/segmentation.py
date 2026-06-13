@@ -1,18 +1,19 @@
+from typing import Any
 import itk
 
-def read_image(filepath):
+def read_image(filepath: str) -> Any:
     """
     Reads an ITK image from file.
     """
     return itk.imread(filepath)
 
-def write_image(image, filepath):
+def write_image(image: Any, filepath: str) -> None:
     """
     Writes an ITK image to file.
     """
     itk.imwrite(image, filepath)
 
-def crop_image(image, start, size):
+def crop_image(image: Any, start: list[int] | tuple[int, ...], size: list[int] | tuple[int, ...]) -> Any:
     """
     Crops an ITK image to a region of interest defined by start index and size.
     Both start and size should be 3-element lists/tuples in ITK coordinate order (x, y, z).

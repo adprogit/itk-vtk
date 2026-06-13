@@ -105,12 +105,8 @@ def sauver_coupes(
 
 
 def main() -> None:
-    fixed, moving = read_volumes(path_1, path_2)
-    fixed_r, moving_r = recaler_rigide(fixed, moving)
-    itk.imwrite(fixed_r, "recalee.png")
-    print(moving_r.GetParameters())
+    pass
 
 
-fixed, moving = read_volumes(path_1, path_2)
-recalee, transform = recaler_rigide(fixed, moving)
-sauver_coupes(fixed, moving, recalee)
+if __name__ == "__main__":
+    main()

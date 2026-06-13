@@ -2,7 +2,6 @@ from typing import Any, TypeAlias
 import itk
 import vtk
 import numpy as np
-import os
 
 ITKImage: TypeAlias = Any
 VTKImage: TypeAlias = Any
@@ -36,7 +35,9 @@ def itk_image_to_vtk_image(img: ITKImage) -> VTKImage:
     return new_img
 
 
-def make_surface_actor(vtk_img: VTKImage, rgb: tuple[float, float, float], opacity: float) -> vtk.vtkActor:
+def make_surface_actor(
+    vtk_img: VTKImage, rgb: tuple[float, float, float], opacity: float
+) -> vtk.vtkActor:
     mc: vtk.vtkMarchingCubes = vtk.vtkMarchingCubes()
     mc.SetInputData(vtk_img)
     mc.SetValue(0, 0.5)

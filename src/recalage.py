@@ -1,9 +1,9 @@
+import os
 from typing import Any, TypeAlias
 
-import os
 import itk
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 ImageType: TypeAlias = itk.Image[itk.F, 3]
 

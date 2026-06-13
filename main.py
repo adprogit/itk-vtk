@@ -1,4 +1,5 @@
-from src.segmentation import read_image, write_image, crop_image
+from src.segmentation import crop_image, read_image, write_image
+
 
 def main() -> None:
     gre1_path = "data/case6_gre1.nrrd"
@@ -29,6 +30,7 @@ def main() -> None:
         size = img.GetLargestPossibleRegion().GetSize()
         spacing = img.GetSpacing()
         print(f"  {f} -> Size: {list(size)}, Spacing: {list(spacing)}")
+
 
 if __name__ == "__main__":
     main()

@@ -16,6 +16,9 @@ def load_image(path: str) -> ITKImage:
 
 
 def itk_image_to_vtk_image(img: ITKImage) -> VTKImage:
+    """
+    Converts an ITK image into a VTK image
+    """
     arr: np.ndarray = itk.array_from_image(img)
     arr = (arr > 0).astype(np.uint8)
 
@@ -39,6 +42,9 @@ def itk_image_to_vtk_image(img: ITKImage) -> VTKImage:
 def make_surface_actor(
     vtk_img: VTKImage, rgb: tuple[float, float, float], opacity: float
 ) -> vtk.vtkActor:
+    """
+    Creates an actor that highlights a surface with the given color
+    """
     mc: vtk.vtkMarchingCubes = vtk.vtkMarchingCubes()
     mc.SetInputData(vtk_img)
     mc.SetValue(0, 0.5)

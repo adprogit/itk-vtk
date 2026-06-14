@@ -1,7 +1,7 @@
 from typing import Any, TypeAlias
 import itk
-import vtk
 import numpy as np
+import vtk
 
 ITKImage: TypeAlias = Any
 VTKImage: TypeAlias = Any

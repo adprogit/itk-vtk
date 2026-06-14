@@ -71,5 +71,6 @@ def main() -> None:
         print(f"    Tumor voxel count: {tumor_voxel_count}")
         print(f"    Tumor volume: {tumor_volume:.2f} mm³")
 
+
 if __name__ == "__main__":
     main()

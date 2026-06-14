@@ -112,4 +112,3 @@ def morphological_opening(image: Any, radius: int = 1) -> Any:
     )
     filter_opening.Update()
     return filter_opening.GetOutput()
-

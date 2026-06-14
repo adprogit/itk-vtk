@@ -85,7 +85,7 @@ def main() -> None:
     volume_voxel: float = spacing[0] * spacing[1] * spacing[2]
 
     vol1: float = int(pos_seg1.sum()) * volume_voxel
-    vol2: float = int(pos_seg1.sum()) * volume_voxel
+    vol2: float = int(pos_seg2.sum()) * volume_voxel
     delta: float = vol2 - vol1
     delta_percent: float = (delta / vol1 * 100) if vol1 > 0 else 0.0
 

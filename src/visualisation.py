@@ -1,4 +1,5 @@
 from typing import Any, TypeAlias
+
 import itk
 import numpy as np
 import vtk

@@ -1,4 +1,5 @@
 from typing import Any, TypeAlias
+from vtkmodules.util.numpy_support import numpy_to_vtk
 
 import itk
 import numpy as np
@@ -31,11 +32,11 @@ def itk_image_to_vtk_image(img: ITKImage) -> VTKImage:
     new_img.SetOrigin(origin[0], origin[1], origin[2])
 
     flat: np.ndarray = arr.flatten(order="C")
-    new_arr: Any = vtk.vtkUnsignedCharArray()
-    new_arr.SetNumberOfTuples(len(flat))
-    for index, value in enumerate(flat):
-        new_arr.SetValue(index, int(value))
-    new_img.GetPointData().SetScalars(new_arr)
+    vtk_arr: vtk.vtkDataArray = numpy_to_vtk(
+        num_array=flat, deep=True, array_type=vtk.VTK_UNSIGNED_CHAR
+    )  # type: ignore[no-untyped-call]
+
+    new_img.GetPointData().SetScalars(vtk_arr)
     return new_img
 
 

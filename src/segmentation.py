@@ -1,6 +1,7 @@
 from typing import Any
 
 import itk
+import numpy as np
 
 
 def read_image(filepath: str) -> Any:
@@ -112,3 +113,54 @@ def morphological_opening(image: Any, radius: int = 1) -> Any:
     )
     filter_opening.Update()
     return filter_opening.GetOutput()
+
+
+def find_automatic_seed(image: Any, border_margin: int = 5) -> list[int]:
+    """
+    Finds a seed point automatically in the cropped image.
+    Avoids the borders (defined by border_margin) to ignore skull/boundary hyper-intensities.
+    Selects the voxel with the maximum intensity within the remaining inner region.
+    Returns the coordinates in ITK index order [x, y, z].
+    """
+    arr = itk.GetArrayFromImage(image)
+
+    # Take an inner sub-volume
+    inner = arr[
+        border_margin:-border_margin,
+        border_margin:-border_margin,
+        border_margin:-border_margin,
+    ]
+
+    # Find the maximum intensity index in the inner sub-volume
+    max_idx_inner = np.unravel_index(np.argmax(inner), inner.shape)
+
+    # Map back to full image numpy coordinates
+    z = int(max_idx_inner[0] + border_margin)
+    y = int(max_idx_inner[1] + border_margin)
+    x = int(max_idx_inner[2] + border_margin)
+
+    # Return as ITK coordinates [x, y, z]
+    return [x, y, z]
+
+
+def automated_segmentation(
+    image: Any,
+    iterations: int = 5,
+    multiplier: float = 1.0,
+    neighborhood_radius: int = 1,
+    border_margin: int = 5,
+) -> tuple[Any, list[int]]:
+    """
+    Performs fully automated segmentation on a cropped image by automatically
+    finding a seed point (inner max intensity voxel) and growing the region.
+    Returns the segmented mask and the seed point used.
+    """
+    seed = find_automatic_seed(image, border_margin=border_margin)
+    mask = confidence_connected_segmentation(
+        image,
+        seed_points=[seed],
+        iterations=iterations,
+        multiplier=multiplier,
+        neighborhood_radius=neighborhood_radius,
+    )
+    return mask, seed

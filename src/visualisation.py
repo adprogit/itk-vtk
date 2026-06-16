@@ -1,9 +1,9 @@
 from typing import Any, TypeAlias
-from vtkmodules.util.numpy_support import numpy_to_vtk
 
 import itk
 import numpy as np
 import vtk
+from vtkmodules.util.numpy_support import numpy_to_vtk
 
 ITKImage: TypeAlias = Any
 VTKImage: TypeAlias = Any

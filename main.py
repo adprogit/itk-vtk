@@ -8,6 +8,7 @@ from src.segmentation import (
     read_image,
     write_image,
 )
+from src.validate_segmentation import run_validation
 
 
 def main() -> None:
@@ -101,6 +102,13 @@ def main() -> None:
         print(f"  Automated Seed:      {auto_seed}")
         print(f"  Semi-Automated Voxel Count: {voxels_semi:5d} | Volume: {vol_semi:8.2f} mm³")
         print(f"  Automated Voxel Count:      {voxels_auto:5d} | Volume: {vol_auto:8.2f} mm³")
+
+    # --- Validation and Comparison Metrics ---
+    print("\n=======================================================")
+    print("VALIDATION METRICS (SEMI-AUTOMATED VS AUTOMATED)")
+    print("=======================================================")
+    run_validation("T1 (Baseline)", mask_gre1_path, mask_auto_gre1_path)
+    run_validation("T2 (Follow-up)", mask_gre2_path, mask_auto_gre2_path)
 
 
 if __name__ == "__main__":

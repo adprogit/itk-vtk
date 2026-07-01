@@ -122,7 +122,12 @@ def find_automatic_seed(image: Any, border_margin: int = 5) -> list[int]:
     Selects the voxel with the maximum intensity within the remaining inner region.
     Returns the coordinates in ITK index order [x, y, z].
     """
-    arr = itk.GetArrayFromImage(image)
+    sigma: float = 2.0
+    smoother = itk.SmoothingRecursiveGaussianImageFilter.New(Input=image)
+    smoother.SetSigma(sigma)
+    smoother.Update()
+
+    arr = itk.GetArrayFromImage(smoother.GetOutput())
 
     # Take an inner sub-volume
     inner = arr[
@@ -145,22 +150,16 @@ def find_automatic_seed(image: Any, border_margin: int = 5) -> list[int]:
 
 def automated_segmentation(
     image: Any,
-    iterations: int = 5,
-    multiplier: float = 1.0,
-    neighborhood_radius: int = 1,
+    lower_threshold: float = 500,
+    upper_threshold: float = 1300,
     border_margin: int = 5,
+    sigma: float = 2.0,
 ) -> tuple[Any, list[int]]:
-    """
-    Performs fully automated segmentation on a cropped image by automatically
-    finding a seed point (inner max intensity voxel) and growing the region.
-    Returns the segmented mask and the seed point used.
-    """
     seed = find_automatic_seed(image, border_margin=border_margin)
-    mask = confidence_connected_segmentation(
+    mask = connected_threshold_segmentation(
         image,
         seed_points=[seed],
-        iterations=iterations,
-        multiplier=multiplier,
-        neighborhood_radius=neighborhood_radius,
+        lower_threshold=lower_threshold,
+        upper_threshold=upper_threshold,
     )
     return mask, seed

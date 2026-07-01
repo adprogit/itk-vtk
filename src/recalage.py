@@ -7,8 +7,8 @@ import numpy as np
 
 ImageType: TypeAlias = itk.Image[itk.F, 3]
 
-path_1 = "../data/case6_gre1.nrrd"
-path_2 = "../data/case6_gre2.nrrd"
+# path_1 = "../data/case6_gre1.nrrd"
+# path_2 = "../data/case6_gre2.nrrd"
 
 
 ITKImage: TypeAlias = Any
@@ -197,7 +197,7 @@ def sauver_volumes(
     transform: ITKTransform | None = None,
     prefixe: str = "recale",
     dossier: str = "results",
-) -> None:
+) -> str:
     os.makedirs(dossier, exist_ok=True)
     chemin = os.path.join(dossier, f"{prefixe}.nrrd")
     itk.imwrite(recalee, chemin)
@@ -206,6 +206,7 @@ def sauver_volumes(
         chemin_tfm = os.path.join(dossier, f"{prefixe}.tfm")
         itk.transformwrite([transform], chemin_tfm)
         print(f"écrit : {chemin_tfm}")
+    return chemin
 
 
 def sauver_coupes(
@@ -249,26 +250,7 @@ def mesurer_residu(fixed: ITKImage, autre: ITKImage) -> float:
     return float(np.sqrt(np.mean((f - a) ** 2)))
 
 
-def main() -> None:
+def recaler(path_1: str, path_2: str) -> str:
     fixed, moving = read_volumes(path_1, path_2)
-
-    methodes: dict[str, Any] = {
-        "translation": recaler_translation,
-        "rigide": recaler_rigide,
-        "similarity": recaler_similarity,
-        "affine": recaler_affine,
-    }
-
-    avant = mesurer_residu(fixed, moving)
-    print(f"résidu AVANT recalage : {avant:8.2f}")
-    for nom, fonction in methodes.items():
-        recalee, final = fonction(fixed, moving)
-        apres = mesurer_residu(fixed, recalee)
-        gain = 100.0 * (avant - apres) / avant
-        print(f"{nom:12s} : résidu APRÈS = {apres:8.2f}   (gain {gain:5.1f} %)")
-        sauver_volumes(recalee, final, prefixe=f"recale_{nom}")
-        sauver_coupes(fixed, moving, recalee, prefixe=f"recalage_{nom}")
-
-
-if __name__ == "__main__":
-    main()
+    recalee, transform = recaler_rigide(fixed, moving)
+    return sauver_volumes(recalee, transform, prefixe="recale_rigide")
